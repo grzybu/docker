@@ -1,0 +1,84 @@
+# *.scoob3 - MA Sites
+
+server {
+
+	listen 80;
+	listen 443 ssl;
+	
+ 	ssl_certificate /usr/local/etc/nginx/ssl/server.crt;
+	ssl_certificate_key /usr/local/etc/nginx/ssl/server.key;
+	
+	server_name loyaltypanel.scoob3 *.loyaltypanel.scoob3;
+    root /var/www/html/scoob3/loyaltypanel/public;
+	
+	index index.php index.html index.htm;
+#    add_header 'Access-Control-Allow-Origin' "*";
+	
+	location / {
+		if ($args ~ _escaped_fragment_) {
+		        	rewrite ^(.*)$ /static.php?$args last;
+		}
+		try_files $uri $uri/ /index.php$is_args$args;
+	}
+	
+    location ~ ^/index.php {
+  	  	fastcgi_pass 127.0.0.1:9000;
+    	fastcgi_index index.php;
+    	fastcgi_intercept_errors on;
+    	include fastcgi_params;
+    
+    
+	
+#	  if ($request_method = 'OPTIONS') {
+#	        	add_header 'Access-Control-Allow-Origin' "$http_origin";
+#	        	 add_header 'Access-Control-Allow-Credentials' 'true';
+#	        	add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+#	        	 add_header 'Access-Control-Allow-Headers' 'Accept-Encoding, Accept-Language, Cache-Control, Connection, Host, Pragma, Expires, Last-Modified, Accept, X-Requested-With, Content-Language, Content-Type, DNT, Referer, WWW-Authenticate, X-WWW-authenticate, Authorization';
+#	        	add_header 'Access-Control-Max-Age' 1728000;
+#	        	add_header 'Content-Type' 'text/plain charset=UTF-8';
+#	        	 add_header 'Content-Length' 0;
+#
+#	        	 return 204;
+#	    	 }
+	# CORS
+#    	 set $cors '';
+#    	if ($http_origin ~* http.+) {
+#        	set $cors 'true';
+#    	}
+#	 if ($cors = 'true') {
+#	        	add_header 'Access-Control-Allow-Origin' "*";
+#	        	add_header 'Access-Control-Allow-Credentials' 'true';
+#	        	 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+#	        	 add_header 'Access-Control-Allow-Headers' 'Accept-Encoding, Accept-Language, Cache-Control, Connection, Host, Pragma, Expires, Last-Modified, Accept, X-Requested-With, Content-Language, Content-Type, DNT, Referer, WWW-Authenticate, X-WWW-authenticate, Authorization';
+#	    	 }
+		 
+
+     }
+	 
+	 # Pliki statycznie - nie logujemy i długi czas w CACHE przeglądarki
+#	 	location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico)$ {
+#	     	access_log off;
+#	     	 expires 30d;
+#	     	try_files $uri $uri/ /index.php$is_args$args;
+#	 	 }
+		 
+		 
+	 # Handler PHP
+	 	 location ~ \.php$ {
+
+
+  	   		 fastcgi_pass 127.0.0.1:9000;
+	     	 fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+	     	 include fastcgi_params;
+	     	fastcgi_read_timeout 300;
+
+	     	fastcgi_buffers 16 16k;
+	     	fastcgi_buffer_size 32k;
+
+
+	 	 }
+		 
+	
+	
+}

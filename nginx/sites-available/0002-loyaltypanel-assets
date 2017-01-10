@@ -1,0 +1,23 @@
+server {
+	listen 80;
+	server_name static.loyaltypanel.scoob3 *.static.loyaltypanel.scoob3;
+    add_header 'Access-Control-Allow-Origin' "*";
+	
+	fastcgi_buffers 16 16k; 
+	fastcgi_buffer_size 32k;
+	
+	root /var/www/html/scoob3/loyaltypanel/public/assets/;
+	index index.php index.html index.htm;
+	
+	
+	location / {
+		add_header 'Access-Control-Allow-Origin' "*";
+	    	try_files $uri $uri/ @rewrite;
+	}
+	location @rewrite {
+
+	rewrite ^(.*)$ http://assets.loyaltypanel.scoob3/assets$1 redirect;
+	}
+	
+
+}

@@ -1,0 +1,64 @@
+server {
+    listen 80;
+    listen 443 ssl;
+
+    ssl_certificate /etc/nginx/ssl/nginx.crt;
+    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+
+    server_name ~^s\d+\.static\.(?P<maproject>.+)\.scoob3$;
+    server_tokens off;
+
+    root /usr/share/nginx/html/scoob3/$maproject/public/assets;
+
+    index index.html index.htm;
+
+    add_header 'Access-Control-Allow-Origin' "*" always;
+    add_header 'Access-Control-Allow-Headers' "Accept-Encoding, Accept-Language, Cache-Control, Pragma, Expires, Last-Modified, Accept, X-Requested-With, Content-Language, Content-Type, User-Agent, Referer, Origin" always;
+    add_header 'Access-Control-Allow-Methods' "POST, GET, PUT, DELETE, PATCH, HEAD, OPTIONS" always;
+
+    location / {
+        expires 30d;
+        try_files $uri $uri/ @rewrite;
+    }
+
+    location @rewrite {
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PATCH' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept-Encoding, Accept-Language, Cache-Control, Connection, Host, Pragma, Expires, Last-Modified, Accept, X-Requested-With, Content-Language, Content-Type, User-Agent, Referer, Origin' always;
+            add_header 'Access-Control-Max-Age' 1728000 always;
+            add_header 'Content-Type' 'text/plain charset=UTF-8' always;
+            add_header 'Content-Length' 0 always;
+
+            return 204;
+        }
+
+        # CORS
+        set $cors '';
+        if ($http_origin ~* http.+) {
+            set $cors 'true';
+        }
+
+        if ($cors = 'true') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept-Encoding, Accept-Language, Cache-Control, Connection, Host, Pragma, Expires, Last-Modified, Accept, X-Requested-With, Content-Language, Content-Type, User-Agent, Referer, Origin' always;
+        }
+
+        rewrite ^(.*)$ $scheme://assets.$maproject.scoob3/assets$1 redirect;
+    }
+
+    location ~ \.php$ {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    location ~ /\. { 
+        deny all; 
+        access_log off; 
+        log_not_found off; 
+    }
+}

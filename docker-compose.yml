@@ -1,0 +1,50 @@
+nginx:
+  build: ./
+  dockerfile: ./nginx/Dockerfile
+  ports:
+     - "80:80"
+  volumes:
+     - /Users/grzybu/Sites:/usr/share/nginx/html:ro
+     - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+     - ./nginx/sites-available:/etc/nginx/sites-available
+     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+     - ./nginx/ssl:/etc/nginx/ssl
+     - ./nginx/dnsmasq.conf:/etc/dnsmasq.d/docker.conf
+     - ./nginx/resolver:/etc/resolver
+  links:
+     - php
+  environment:
+     - SHELL=/bin/bash      
+php:
+  build: ./
+  dockerfile: ./php/Dockerfile    
+  volumes:
+     - /Users/grzybu/Sites/:/usr/share/nginx/html
+     - ./php/docker-conifg-overrides.ini:/usr/local/etc/php/conf.d/docker-config-overrides.ini
+     - ./php/php-fpm-overrides.conf:/usr/local/etc/php-fpm.d/zzz-overrides.conf
+  links:
+     - mysql
+     - es
+     - memcached
+mysql:
+  image: mysql:5.7
+  ports:
+     - 3306:3306
+  environment:
+     - MYSQL_ROOT_PASSWORD=tygrys
+     - MYSQL_DATABASE=
+     - MYSQL_USER=root
+  volumes:
+     - ./mysql/data:/var/lib/mysql
+es:
+  image: elasticsearch:1
+  ports:
+     - 9200:9200
+     - 9300:9300
+  links:
+     - mysql
+memcached:
+  image: memcached
+  ports:
+     - "11211:11211"                 
+     
