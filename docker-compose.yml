@@ -20,7 +20,7 @@ php:
   dockerfile: ./php/Dockerfile    
   volumes:
      - /Users/grzybu/Sites/:/usr/share/nginx/html
-     - ./php/docker-conifg-overrides.ini:/usr/local/etc/php/conf.d/docker-config-overrides.ini
+     - ./php/docker-config-overrides.ini:/usr/local/etc/php/conf.d/docker-config-overrides.ini
      - ./php/php-fpm-overrides.conf:/usr/local/etc/php-fpm.d/zzz-overrides.conf
   links:
      - mysql
