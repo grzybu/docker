@@ -4,7 +4,7 @@ nginx:
   ports:
      - "80:80"
   volumes:
-     - /Users/grzybu/Sites:/usr/share/nginx/html:ro
+     - /Users/grzybu/Sites:/usr/share/nginx/html
      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
      - ./nginx/sites-available:/etc/nginx/sites-available
      - ./nginx/nginx.conf:/etc/nginx/nginx.conf

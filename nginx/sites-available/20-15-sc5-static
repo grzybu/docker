@@ -2,8 +2,8 @@ server {
     listen 80;
     listen 443 ssl;
 
-    ssl_certificate /etc/nginx/ssl/nginx.crt;
-    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+    ssl_certificate /etc/nginx/ssl/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/server.key;
 
     server_name ~^s\d+\.static\.(?P<maproject>.+)\.scoob3$;
     server_tokens off;
